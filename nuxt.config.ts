@@ -20,5 +20,12 @@ export default defineNuxtConfig({
         {src: 'https://js.stripe.com/v3/', defer: true}
       ],
     }
-  }
+  },
+  css: ['~/assets/css/main.css'],
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
 });
