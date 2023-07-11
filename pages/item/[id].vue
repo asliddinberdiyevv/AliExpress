@@ -4,6 +4,7 @@ import { useUserStore } from "~/stores/user";
 const userStore = useUserStore();
 const route = useRoute();
 
+let product = ref(null);
 const currentImage = ref(null);
 const images = ref([
   "",
@@ -26,18 +27,29 @@ const isInCart = computed(() => {
 });
 
 const priceComputed = computed(() => {
-  return "26.40";
+  if (product.value && product.value.data) {
+    return product.value.data.price / 100;
+  }
+
+  return "0.00";
 });
 
-onMounted(() => {
-  watchEffect(() => {
-    currentImage.value = "https://picsum.photos/id/77/800/800";
-    images.value[0] = "https://picsum.photos/id/77/800/800";
-  });
+onBeforeMount(async () => {
+  product.value = await useFetch(
+    `/api/prisma/get-product-by-id/${route.params.id}`
+  );
+});
+
+watchEffect(() => {
+  if (product.value && product.value.data) {
+    currentImage.value = product.value.data.url;
+    images.value[0] = product.value.data.url;
+    userStore.isLoading = false;
+  }
 });
 
 const addToCart = () => {
-  alert("ADDED");
+  userStore.cart.push(product.value.data);
 };
 </script>
 
@@ -70,9 +82,11 @@ const addToCart = () => {
         </div>
 
         <div class="md:w-[60%] bg-white p-3 rounded">
-          <div v-if="true">
-            <p class="mb-2">Title</p>
-            <p class="font-light text-[12px] mb-2">Description Section</p>
+          <div v-if="product && product.data">
+            <p class="mb-2">{{ product.data.title }}</p>
+            <p class="font-light text-[12px] mb-2">
+              {{ product.data.description }}
+            </p>
           </div>
           <div class="flex items-center pt-1.5">
             <span class="h-4 min-w-4 rounded-full p-0.5 bg-[#ffd000] mr-2">

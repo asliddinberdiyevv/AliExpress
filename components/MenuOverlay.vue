@@ -1,5 +1,4 @@
 <script setup>
-import { sign } from "crypto";
 import { useUserStore } from "~/stores/user";
 const userStore = useUserStore();
 
