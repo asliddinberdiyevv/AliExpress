@@ -98,7 +98,12 @@ const pay = async () => {
   isProcessing.value = true;
 
   let result = await stripe.confirmCardPayment(clientSecret, {
-    payment_method: { card: card },
+    payment_method: {
+      card: card,
+      billing_details: {
+        name: "test name",
+      },
+    },
   });
 
   if (result.error) {
